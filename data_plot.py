@@ -17,7 +17,7 @@ for column_name in column_names:
 madata.update_data()
 madata.generate_csv()
 
-df_malaga_path = './malaga_data/malaga_covid.csv'
+df_malaga_path = './data_malaga.csv'
 
 dateparse = lambda x: pd.datetime.strptime(x, '%d/%m/%Y')
 df_malaga = pd.read_csv(df_malaga_path, delimiter=',', parse_dates=['fecha'], date_parser=dateparse)
