@@ -70,6 +70,8 @@ logger.info('Data ready for plotting.')
 logger.info('Starting plotting.')
 # Plot the data
 
+pd.plotting.register_matplotlib_converters()
+
 plt.style.use('seaborn-pastel')
 
 fig, ax = plt.subplots(figsize=(30,20))
