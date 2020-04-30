@@ -33,7 +33,7 @@ for column_name in column_names:
 madata.update_data()
 madata.generate_csv()
 
-df_malaga_path = './data_malaga.csv'
+df_malaga_path = 'data/norm_data.csv'
 
 dateparse = lambda x: pd.datetime.strptime(x, '%d/%m/%Y')
 df_malaga = pd.read_csv(df_malaga_path, delimiter=',', parse_dates=['fecha'], date_parser=dateparse)
@@ -70,7 +70,7 @@ logger.info('Data ready for plotting.')
 logger.info('Starting plotting.')
 # Plot the data
 
-pd.plotting.register_matplotlib_converters()
+pd.plotting.register_matplotlib_converters() # Fix pandas and matplotlib datetime
 
 plt.style.use('seaborn-pastel')
 
