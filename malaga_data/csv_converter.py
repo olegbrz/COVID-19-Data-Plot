@@ -1,15 +1,32 @@
 import pandas as pd
 from numpy import flip
 from requests import get
+import logging
+
+# Logger settings
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(levelname)s:%(asctime)s:%(name)s:%(message)s')
+file_handler = logging.FileHandler('log_file.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(formatter)
+logger.addHandler(consoleHandler)
 
 # Get the data from Consejería de Salud de Andalucía
 def update_data():
+    logger.info('Getting data from www.juntadeandalucia.es.')
     with open('cs_data.csv', 'wb+') as csv:
         URL ='https://www.juntadeandalucia.es/institutodeestadisticaycartografia/badea/stpivot/stpivot/Print?cube=ea03f80c-7142-4d1c-9e5f-42628b275461&type=3&foto=si&ejecutaDesde=&codConsulta=38228&consTipoVisua=JP'
         r = get(URL)
         csv.write(r.content)
+        logger.info('Information written successfully.')
 
 def generate_csv():
+    logger.info('Preparing data for plotting.')
     # Columns from csv that we will use
     cols_to_use = [
         'Fecha', 'Territorio',
@@ -59,4 +76,4 @@ def generate_csv():
 
     # Save to csv
     df_malaga.to_csv('data_malaga.csv', index=False)
-    print('.csv written with success!')
+    logger.info('.csv written with success.')

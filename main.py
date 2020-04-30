@@ -1,14 +1,30 @@
 import malaga_data.csv_converter as madata
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(levelname)s:%(asctime)s:%(name)s:%(message)s')
+file_handler = logging.FileHandler('log_file.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(formatter)
+logger.addHandler(consoleHandler)
+
 
 # Get the data
 column_names = ['casos', 'altas', 'fallecimientos', 'ingresos_uci', 'hospitalizados']
 url = 'https://raw.githubusercontent.com/datadista/datasets/master/COVID%2019/nacional_covid19.csv'
 
+logger.info('Getting data from GitHub.')
 df_spain = pd.read_csv(url, delimiter=',', parse_dates=['fecha'])
+logger.info('Success.')
 df_spain = df_spain.fillna(0)
 
 for column_name in column_names:
@@ -26,6 +42,7 @@ df_malaga = df_malaga.fillna(0)
 for column_name in column_names:
     df_spain[column_name] = df_spain[column_name].astype('int')
 
+logger.info('Computing data for plot.')
 # Compute data
 
 # Spain
@@ -48,6 +65,9 @@ diff_active_malaga = np.insert(np.diff(active_malaga), 0, 0)
 diff_cases_malaga = np.insert(np.diff(cases_malaga), 0, 0)
 diff_deaths_malaga = np.insert(np.diff(deaths_malaga), 0, 0)
 
+logger.info('Data ready for plotting.')
+
+logger.info('Starting plotting.')
 # Plot the data
 
 plt.style.use('seaborn-pastel')
@@ -181,6 +201,7 @@ ax.xaxis.set_major_formatter(mdates.DateFormatter('%d %b'))
 fig.text(0.13, 0.06, "Data source: https://github.com/datadista/datasets"
                      "\nAuthor: Oleg Brezitskyy (@oleg.brz)", fontsize=10) 
 
+logger.info('Writing plot  to image.')
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 
-print('OK!')
+logger.info('Done.')
