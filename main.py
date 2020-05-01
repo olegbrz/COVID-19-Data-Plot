@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-formatter = logging.Formatter('%(levelname)s:%(asctime)s:%(name)s:%(message)s')
+formatter = logging.Formatter('%(levelname)s:%(asctime)s:%(name)s: %(message)s')
 file_handler = logging.FileHandler('log_file.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
@@ -19,7 +19,7 @@ logger.addHandler(consoleHandler)
 
 
 # Get the data
-column_names = ['casos', 'altas', 'fallecimientos', 'ingresos_uci', 'hospitalizados']
+column_names = ['casos_total', 'altas', 'fallecimientos', 'ingresos_uci', 'hospitalizados']
 url = 'https://raw.githubusercontent.com/datadista/datasets/master/COVID%2019/nacional_covid19.csv'
 
 logger.info('Getting data from GitHub.')
@@ -33,7 +33,7 @@ for column_name in column_names:
 madata.update_data()
 madata.generate_csv()
 
-df_malaga_path = './data_malaga.csv'
+df_malaga_path = 'data/norm_data.csv'
 
 dateparse = lambda x: pd.datetime.strptime(x, '%d/%m/%Y')
 df_malaga = pd.read_csv(df_malaga_path, delimiter=',', parse_dates=['fecha'], date_parser=dateparse)
@@ -46,10 +46,10 @@ logger.info('Computing data for plot.')
 # Compute data
 
 # Spain
-cases_spain = df_spain['casos']
+cases_spain = df_spain['casos_total']
 cured_spain = df_spain['altas']
 deaths_spain = df_spain['fallecimientos']
-active_spain = df_spain['casos'] - df_spain['altas'] - df_spain['fallecimientos']
+active_spain = df_spain['casos_total'] - df_spain['altas'] - df_spain['fallecimientos']
 
 diff_active_spain = np.insert(np.diff(active_spain), 0, 0)
 diff_cases_spain = np.insert(np.diff(cases_spain), 0, 0)
@@ -70,7 +70,7 @@ logger.info('Data ready for plotting.')
 logger.info('Starting plotting.')
 # Plot the data
 
-pd.plotting.register_matplotlib_converters()
+pd.plotting.register_matplotlib_converters() # Fix pandas and matplotlib datetime
 
 plt.style.use('seaborn-pastel')
 
@@ -166,9 +166,9 @@ ax.bar(df_spain['fecha'], diff_active_spain, lw=2.5, color= data_colors[0], labe
 
 ax.legend(loc='upper left')
 
-ax.annotate('Oopsie from\nthe Government', xy=(df_spain['fecha'][52], diff_active_spain[52]), xytext=(-20,40),
-            textcoords='offset points', va='center', ha='center', color='#000000',
-            fontsize=10, arrowprops={'arrowstyle': '->'})
+#ax.annotate('Oopsie from\nthe Government', xy=(df_spain['fecha'][52], diff_active_spain[52]), xytext=(-20,40),
+#            textcoords='offset points', va='center', ha='center', color='#000000',
+#            fontsize=10, arrowprops={'arrowstyle': '->'})
 
 ax.xaxis.set_major_locator(mdates.WeekdayLocator())
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%d %b'))

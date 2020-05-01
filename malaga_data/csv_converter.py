@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-formatter = logging.Formatter('%(levelname)s:%(asctime)s:%(name)s:%(message)s')
+formatter = logging.Formatter('%(levelname)s:%(asctime)s:%(name)s: %(message)s')
 file_handler = logging.FileHandler('log_file.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
@@ -19,8 +19,8 @@ logger.addHandler(consoleHandler)
 # Get the data from Consejería de Salud de Andalucía
 def update_data():
     logger.info('Getting data from www.juntadeandalucia.es.')
-    with open('cs_data.csv', 'wb+') as csv:
-        URL ='https://www.juntadeandalucia.es/institutodeestadisticaycartografia/badea/stpivot/stpivot/Print?cube=ea03f80c-7142-4d1c-9e5f-42628b275461&type=3&foto=si&ejecutaDesde=&codConsulta=38228&consTipoVisua=JP'
+    with open('data/extracted_data.csv', 'wb+') as csv:
+        URL ='https://www.juntadeandalucia.es/institutodeestadisticaycartografia/badea/stpivot/stpivot/Print?cube=f7848d22-8912-4b4c-acd2-27dc8daf53a6&type=3&foto=si&ejecutaDesde=&codConsulta=39360&consTipoVisua=JP'
         r = get(URL)
         csv.write(r.content)
         logger.info('Information written successfully.')
@@ -33,7 +33,7 @@ def generate_csv():
         'Medida', 'Valor']
 
     # Import csv
-    df = pd.read_csv('cs_data.csv', delimiter=';', usecols=cols_to_use)
+    df = pd.read_csv('data/extracted_data.csv', delimiter=';', usecols=cols_to_use)
     df = df.fillna(0)
 
     # Set data type of 'Value' as 'int'
@@ -75,5 +75,5 @@ def generate_csv():
         'ingresos_uci', 'hospitalizados']]
 
     # Save to csv
-    df_malaga.to_csv('data_malaga.csv', index=False)
+    df_malaga.to_csv('data/norm_data.csv', index=False)
     logger.info('.csv written with success.')
