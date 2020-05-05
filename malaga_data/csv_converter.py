@@ -44,11 +44,7 @@ def get_new_link():
 def update_data():
     logger.info('Getting data from www.juntadeandalucia.es.')
     with open('data/extracted_data.csv', 'wb+') as csv:
-<<<<<<< HEAD
         URL = get_new_link()
-=======
-        URL = 'https://www.juntadeandalucia.es/institutodeestadisticaycartografia/badea/stpivot/stpivot/Print?cube=98150b7e-f158-49d8-a32c-e5476df7525f&type=3&foto=si&ejecutaDesde=&codConsulta=38228&consTipoVisua=JP'
->>>>>>> 777a95685adadb932cf6474e180062afc5711936
         r = get(URL)
         csv.write(r.content)
         logger.info('Information written successfully.')
