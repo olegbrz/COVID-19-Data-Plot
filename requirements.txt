@@ -1,4 +1,0 @@
-matplotlib
-selenium
-pandas
-numpy
