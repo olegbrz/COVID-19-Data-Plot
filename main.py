@@ -126,7 +126,7 @@ ax.spines['right'].set_color('none')
 ax.spines['left'].set_color('none')
 ax.spines['bottom'].set_smart_bounds(True)
 
-data_colors = ['#001b3f', '#05638f', '#6eaedf']
+data_colors = ['#001b3f', '#05638f', '#6eaedf', '#d00005']
 
 ax.bar(df_spain['fecha'], active_spain, label='Actives', color=data_colors[0])
 ax.bar(df_spain['fecha'], deaths_spain, label='Deaths',
@@ -157,7 +157,6 @@ ax.spines['right'].set_color('none')
 ax.spines['left'].set_color('none')
 ax.spines['bottom'].set_smart_bounds(True)
 
-data_colors = ['#001b3f', '#05638f', '#6eaedf']
 
 ax.bar(df_malaga['fecha'], active_malaga,
        label='Actives', color=data_colors[0])
@@ -195,7 +194,7 @@ ax.bar(df_spain['fecha'], diff_active_spain, lw=2.5,
 
 
 ax.plot(df_spain['fecha'], moving_average(diff_active_spain), lw=2.5,
-        color=data_colors[1], label='Moving average of actives variation')
+        color=data_colors[3], label='Moving average of actives variation')
 
 ax.legend(loc='upper left')
 
@@ -229,7 +228,7 @@ ax.bar(df_malaga['fecha'], diff_active_malaga, lw=2.5,
        color=data_colors[0], label='Actives variation')
 
 ax.plot(df_malaga['fecha'], moving_average(diff_active_malaga), lw=2.5,
-        color=data_colors[1], label='Moving average of actives variation')
+        color=data_colors[3], label='Moving average of actives variation')
 
 ax.legend(loc='upper left')
 
