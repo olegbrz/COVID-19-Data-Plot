@@ -24,6 +24,7 @@ def get_new_link():
     URL = 'https://www.juntadeandalucia.es/institutodeestadisticaycartografia/badea/operaciones/consulta/anual/38228?CodOper=b3_2314&codConsulta=38228'
     chrome_options = webdriver.chrome.options.Options()  
     chrome_options.add_argument("--headless") 
+   
     driver = webdriver.Chrome(options=chrome_options)
     logger.info('WebDriver started successfully')
     driver.get(URL)
@@ -32,7 +33,9 @@ def get_new_link():
     driver.find_element_by_xpath('/html/body/form/div/table/tbody/tr/td[3]/table/tbody/tr/td[4]/a/img').click()
     link = driver.find_element_by_xpath('//*[@id="exportTXT"]').get_attribute('href')
     logger.info('New link obtained')
+    
     driver.quit()
+
     return link
 
 # Get the data from Consejería de Salud de Andalucía
