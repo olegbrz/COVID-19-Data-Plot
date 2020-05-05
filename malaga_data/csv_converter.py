@@ -1,6 +1,7 @@
 import pandas as pd
 from numpy import flip
 from requests import get
+from selenium import webdriver
 import logging
 
 # Logger settings
@@ -16,11 +17,28 @@ consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(formatter)
 logger.addHandler(consoleHandler)
 
+# Get new link as the old ones expire after some time
+def get_new_link():
+    logger.info('Initializing WebDriver to get new link to JA data')
+    URL = 'https://www.juntadeandalucia.es/institutodeestadisticaycartografia/badea/operaciones/consulta/anual/38228?CodOper=b3_2314&codConsulta=38228'
+    chrome_options = webdriver.chrome.options.Options()  
+    chrome_options.add_argument("--headless") 
+    driver = webdriver.Chrome(options=chrome_options)
+    logger.info('WebDriver started successfully')
+    driver.get(URL)
+    logger.info('WebDriver got to the URL')
+    driver.switch_to.frame(driver.find_element_by_tag_name("iframe"))
+    driver.find_element_by_xpath('/html/body/form/div/table/tbody/tr/td[3]/table/tbody/tr/td[4]/a/img').click()
+    link = driver.find_element_by_xpath('//*[@id="exportTXT"]').get_attribute('href')
+    logger.info('New link obtained')
+    driver.quit()
+    return link
+
 # Get the data from Consejería de Salud de Andalucía
 def update_data():
     logger.info('Getting data from www.juntadeandalucia.es.')
     with open('data/extracted_data.csv', 'wb+') as csv:
-        URL ='https://www.juntadeandalucia.es/institutodeestadisticaycartografia/badea/stpivot/stpivot/Print?cube=f7848d22-8912-4b4c-acd2-27dc8daf53a6&type=3&foto=si&ejecutaDesde=&codConsulta=39360&consTipoVisua=JP'
+        URL = get_new_link()
         r = get(URL)
         csv.write(r.content)
         logger.info('Information written successfully.')
