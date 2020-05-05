@@ -1,0 +1,4 @@
+matplotlib
+selenium
+pandas
+numpy
