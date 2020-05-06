@@ -206,7 +206,7 @@ variation_plot('Málaga')
 # ----------------------------------------------------------------
 
 fig.text(0.13, 0.06, "Data source: https://github.com/datadista/datasets"
-                     "\nAuthor: Oleg Brezitskyy (@oleg.brz)", fontsize=10)
+                     "\nAuthors: Oleg Brezitskyy (@olegbrz), Rubén Jiménez (@rubenjr0)", fontsize=10)
 
 logger.info('Writing plot to image.')
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
