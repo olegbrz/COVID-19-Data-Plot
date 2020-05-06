@@ -5,7 +5,8 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import malaga_data.csv_converter as madata
+import data_fetcher.malaga
+import data_fetcher.spain 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -20,39 +21,45 @@ consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(formatter)
 logger.addHandler(consoleHandler)
 
+def date_parse_malaga(x): return pd.datetime.strptime(x, '%d/%m/%Y')
+def date_parse_spain(x): return pd.datetime.strptime(x, '%Y-%m-%d')
+
+# Actualiza si el CSV tiene más de 30 mins de antiguedad
+try:
+    if time() - getmtime('data/malaga_data.csv') > (30 * 60):
+        logger.info('Updating malaga_data.csv...')
+        data_fetcher.malaga.update_data()
+    else:
+        logger.info("File malaga_data.csv is recent, won't be updated.")
+except:
+    logger.info('File malaga_data.csv not found, downloading...')
+    data_fetcher.malaga.update_data()
+
+try:
+    if time() - getmtime('data/spain_data.csv') > (30 * 60):
+        logger.info('Updating spain_data.csv...')
+        data_fetcher.spain.update_data()
+    else:
+        logger.info("File spain_data.csv is recent, won't be updated.")
+except:
+    logger.info('File spain_data.csv not found, downloading...')
+    data_fetcher.spain.update_data()
 
 # Get the data
 column_names = ['casos_total', 'altas',
                 'fallecimientos', 'ingresos_uci', 'hospitalizados']
 url = 'https://raw.githubusercontent.com/datadista/datasets/master/COVID%2019/nacional_covid19.csv'
 
-logger.info('Getting data from GitHub.')
-df_spain = pd.read_csv(url, delimiter=',', parse_dates=['fecha'])
-logger.info('Success.')
-df_spain = df_spain.fillna(0)
+logger.info('Reading data...')
+df_spain = pd.read_csv('data/spain_data.csv', delimiter=',',
+    parse_dates=['fecha'], date_parser=date_parse_spain)
+df_malaga = pd.read_csv('data/malaga_data.csv', delimiter=',',
+    parse_dates=['fecha'], date_parser=date_parse_malaga)
+logger.info('Data read sucessfully.')
 
 for column_name in column_names:
     df_spain[column_name] = df_spain[column_name].astype('int')
-
-# Actualiza si el CSV tiene más de 30 mins de antiguedad
-if time() - getmtime('data/extracted_data.csv') > (30 * 60):
-    madata.update_data()
-    madata.generate_csv()
-
-df_malaga_path = 'data/norm_data.csv'
-
-
-def dateparse(x): return pd.datetime.strptime(x, '%d/%m/%Y')
-
-
-df_malaga = pd.read_csv(df_malaga_path, delimiter=',', parse_dates=[
-                        'fecha'], date_parser=dateparse)
-df_malaga = df_malaga.fillna(0)
-
-for column_name in column_names:
-    df_spain[column_name] = df_spain[column_name].astype('int')
-
-logger.info('Computing data for plot.')
+    df_malaga[column_name] = df_malaga[column_name].astype('int')
 
 
 # Data transformations
@@ -64,7 +71,7 @@ def moving_average(data, n=7):
         averages.append(sum(data[i-7:i])/n)
     return averages
 
-
+logger.info('Computing metrics for plot.')
 # Compute data
 # Spain
 cases_spain = df_spain['casos_total']
@@ -78,10 +85,10 @@ diff_cases_spain = np.insert(np.diff(cases_spain), 0, 0)
 diff_deaths_spain = np.insert(np.diff(deaths_spain), 0, 0)
 
 # Málaga
-cases_malaga = df_malaga['casos']
+cases_malaga = df_malaga['casos_total']
 cured_malaga = df_malaga['altas']
 deaths_malaga = df_malaga['fallecimientos']
-active_malaga = df_malaga['casos'] - \
+active_malaga = df_malaga['casos_total'] - \
     df_malaga['altas'] - df_malaga['fallecimientos']
 
 diff_active_malaga = np.insert(np.diff(active_malaga), 0, 0)
@@ -198,10 +205,6 @@ ax.plot(df_spain['fecha'], moving_average(diff_active_spain), lw=2.5,
 
 ax.legend(loc='upper left')
 
-# ax.annotate('Oopsie from\nthe Government', xy=(df_spain['fecha'][52], diff_active_spain[52]), xytext=(-20,40),
-#            textcoords='offset points', va='center', ha='center', color='#000000',
-#            fontsize=10, arrowprops={'arrowstyle': '->'})
-
 ax.xaxis.set_major_locator(mdates.WeekdayLocator())
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%d %b'))
 
@@ -243,4 +246,4 @@ fig.text(0.13, 0.06, "Data source: https://github.com/datadista/datasets"
 logger.info('Writing plot to image.')
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
 
-logger.info('Done.')
+logger.info('Plot written sucessfully.')
