@@ -186,11 +186,11 @@ def variation_plot(location):
     date = data[location]['date']
     actives_difference = data[location]['actives difference']
     # ------------------------------------
-    ax.plot(data[location]['date'], [0] * len(data[location]['date']),
+    ax.plot(date, [0] * len(date),
             color='212121', lw='2', linestyle=':')
-    ax.bar(data[location]['date'], actives_difference, lw=2.5,
+    ax.bar(date, actives_difference, lw=2.5,
            color=data_colors[0], label='Actives variation')
-    ax.plot(data[location]['date'], moving_average(actives_difference), lw=2.5,
+    ax.plot(date, moving_average(actives_difference), lw=2.5,
             color=data_colors[3], label='Moving average of actives variation')
     ax.legend(loc='upper left')
 
