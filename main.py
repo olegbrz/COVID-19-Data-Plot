@@ -209,6 +209,6 @@ fig.text(0.13, 0.06, "Data source: https://github.com/datadista/datasets"
                      fontsize=10)
 
 logger.info('Writing plot to image.')
-plt.savefig('plot.png', dpi=300, bbox_inches='tight')
+plt.savefig('plot.png', dpi=150, bbox_inches='tight')
 
 logger.info('Plot written sucessfully.')
