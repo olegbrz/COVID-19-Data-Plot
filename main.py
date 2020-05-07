@@ -27,8 +27,7 @@ def date_parse_malaga(x): return pd.datetime.strptime(x, '%d/%m/%Y')
 
 def date_parse_spain(x): return pd.datetime.strptime(x, '%Y-%m-%d')
 
-# Actualiza si el CSV tiene más de 30 mins de antiguedad
-
+# Update if CSV is older than 30 mins
 
 def update_csv_if_needed(csv_path, update_function):
     file_name = csv_path.split('/')[-1]
