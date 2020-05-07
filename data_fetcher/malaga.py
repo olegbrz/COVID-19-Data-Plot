@@ -109,4 +109,4 @@ def update_data():
 
     # Save to csv
     df_malaga.to_csv('data/malaga_data.csv', index=False)
-    logger.info('Málaga data written successfully.')
+    logger.info('Malaga data written successfully.')
