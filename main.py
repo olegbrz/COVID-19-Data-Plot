@@ -31,16 +31,16 @@ def date_parse_spain(x): return pd.datetime.strptime(x, '%Y-%m-%d')
 
 
 def update_csv_if_needed(csv_path, update_function):
-    file_name = csv_path[5:]
+    file_name = csv_path.split('/')[-1]
     try:
         if time() - getmtime(csv_path) > (30 * 60):
-            logger.info('Updating {}...'.format(file_name))
+            logger.info(f'Updating {file_name}...')
             update_function()
         else:
             logger.info(
-                'File {} is recent, won\'t be updated.'.format(file_name))
+                f'File {file_name} is recent, won\'t be updated.')
     except:
-        logger.info('File {} not found, downloading...'.format(file_name))
+        logger.info(f'File {file_name} not found, downloading...')
         update_function()
 
 
@@ -48,9 +48,6 @@ update_csv_if_needed('data/malaga_data.csv', data_fetcher.malaga.update_data)
 update_csv_if_needed('data/spain_data.csv', data_fetcher.spain.update_data)
 
 # Get the data
-column_names = ['casos_total', 'altas',
-                'fallecimientos', 'ingresos_uci', 'hospitalizados']
-url = 'https://raw.githubusercontent.com/datadista/datasets/master/COVID%2019/nacional_covid19.csv'
 
 logger.info('Reading data...')
 df_spain = pd.read_csv('data/spain_data.csv', delimiter=',',
@@ -58,6 +55,9 @@ df_spain = pd.read_csv('data/spain_data.csv', delimiter=',',
 df_malaga = pd.read_csv('data/malaga_data.csv', delimiter=',',
                         parse_dates=['fecha'], date_parser=date_parse_malaga)
 logger.info('Data read sucessfully.')
+
+column_names = ['casos_total', 'altas',
+                'fallecimientos', 'ingresos_uci', 'hospitalizados']
 
 for column_name in column_names:
     df_spain[column_name] = df_spain[column_name].astype('int')
@@ -163,7 +163,7 @@ def plot_init():
 def accumulated_plot(location):
     ax = plot_init()
     ax.set_title(
-        'Accumulated actives, deaths and recovered ({})'.format(location), fontsize=20)
+        f'Accumulated actives, deaths and recovered ({location})', fontsize=20)
     # Data extraction
     date = data[location]['date']
     actives = data[location]['actives']
@@ -181,7 +181,7 @@ def accumulated_plot(location):
 
 def variation_plot(location):
     ax = plot_init()
-    ax.set_title('Active cases variation ({})'.format(location), fontsize=20)
+    ax.set_title(f'Active cases variation ({location})', fontsize=20)
     # Data extraction
     date = data[location]['date']
     actives_difference = data[location]['actives difference']
@@ -206,7 +206,8 @@ variation_plot('Málaga')
 # ----------------------------------------------------------------
 
 fig.text(0.13, 0.06, "Data source: https://github.com/datadista/datasets"
-                     "\nAuthors: Oleg Brezitskyy (@olegbrz), Rubén Jiménez (@rubenjr0)", fontsize=10)
+                     "\nAuthors: Oleg Brezitskyy (@olegbrz), Rubén Jiménez (@rubenjr0)",
+                     fontsize=10)
 
 logger.info('Writing plot to image.')
 plt.savefig('plot.png', dpi=300, bbox_inches='tight')
