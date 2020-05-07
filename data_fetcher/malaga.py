@@ -47,20 +47,19 @@ def update_data():
     extracted = False
     
     while not extracted:
-        with open('data/ja_link.txt','r') as f:
-            URL = f.read()
-        r = get(URL)
-        r = r.content.decode()
-        r = r.rstrip().splitlines()
-
-        if r != []:
-            extracted = True
+        try:
+            with open('data/ja_link.txt','r') as f:
+                URL = f.read()
+            r = get(URL)
+            r = r.content.decode()
+            r = r.rstrip().splitlines()
+            if r == []: raise Exception('No content recieved from JA site.')
             logger.info('Malaga data fetched from JA site successfully')
-        else:
+            extracted = True
+        except:
             logger.info('JA site link failed, generating a new one...')
             with open('data/ja_link.txt', 'w') as f:
                 f.write(get_new_link())
-        
 
     df = pd.DataFrame([x.split(';') for x in r][1:], columns=[x.split(';') for x in r][0])
 
