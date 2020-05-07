@@ -44,20 +44,22 @@ def get_new_link():
 # Get the data from Consejería de Salud de Andalucía
 
 def update_data():
-    URL = 'https://www.juntadeandalucia.es/institutodeestadisticaycartografia/badea/stpivot/stpivot/Print?cube=186c4a47-ffc1-4e62-9d80-7ce5bfcd063c&type=3&foto=si&ejecutaDesde=&codConsulta=38228&consTipoVisua=JP'
     extracted = False
     
     while not extracted:
+        with open('data/ja_link.txt','r') as f:
+            URL = f.read()
         r = get(URL)
         r = r.content.decode()
         r = r.rstrip().splitlines()
 
         if r != []:
             extracted = True
-            logger.info('Málaga data fetched from JA site successfully')
+            logger.info('Malaga data fetched from JA site successfully')
         else:
             logger.info('JA site link failed, generating a new one...')
-            URL = get_new_link()
+            with open('data/ja_link.txt', 'w') as f:
+                f.write(get_new_link())
         
 
     df = pd.DataFrame([x.split(';') for x in r][1:], columns=[x.split(';') for x in r][0])
